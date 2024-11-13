@@ -13,6 +13,82 @@
 				<canvas id="ooze"></canvas>
 			</div>
 		</header>
+		<script>
+			const canvas = document.getElementById('ooze');
+			const ctx = canvas.getContext('2d');
+			let width, height;
+
+			// Настройка размеров canvas под размер окна
+			function resizeCanvas() {
+				width = canvas.width = window.innerWidth;
+				height = canvas.height = window.innerHeight - 160;
+			}
+			window.addEventListener('resize', resizeCanvas);
+			resizeCanvas();
+
+			// Параметры для точек и волн
+			const wavePoints = [];
+			const numWaves = 3;
+			const pointsPerWave = 30;
+			const waveSpeed = 0.015;
+
+			// Цвета для каждой волны (можно задать свой цвет для каждой волны)
+			const waveColors = ['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0.6)', 'rgba(255, 255, 255, 0.4)'];
+
+			function createWaves() {
+				for (let i = 0; i < numWaves; i++) {
+					const points = [];
+					for (let j = 0; j <= pointsPerWave; j++) {
+						points.push({
+							x: (j / pointsPerWave) * (width + 100) - 30,
+							y: height / 2 + i * 60, // Высота волн увеличивается с каждой волной
+							baseY: height / 2 + i * 60, // Устанавливаем разные базовые высоты для волн
+							angle: Math.random() * Math.PI * 3,
+							speed: waveSpeed + Math.random() * 0.02,
+						});
+					}
+					wavePoints.push(points);
+				}
+
+				wavePoints[1].forEach((point) => (point.baseY -= 140));
+				wavePoints[2].forEach((point) => (point.baseY -= 280));
+			}
+			createWaves();
+
+			// Функция анимации
+			function animate() {
+				ctx.clearRect(0, 0, width, height);
+
+				wavePoints.forEach((points, waveIndex) => {
+					ctx.beginPath();
+					ctx.moveTo(points[0].x, points[0].y);
+
+					points.forEach((point, pointIndex) => {
+						point.y = point.baseY + 120 * Math.sin(point.angle);
+						point.angle += point.speed;
+
+						if (pointIndex < points.length - 1) {
+							const nextPoint = points[pointIndex + 1];
+							const controlX = (point.x + nextPoint.x) / 2;
+							const controlY = (point.y + nextPoint.y) / 2;
+							ctx.quadraticCurveTo(point.x, point.y, controlX, controlY);
+						}
+					});
+
+					ctx.lineTo(width, height);
+					ctx.lineTo(0, height);
+					ctx.closePath();
+
+					// Используем цвет, соответствующий индексу волны
+					ctx.fillStyle = waveColors[waveIndex];
+					ctx.fill();
+				});
+
+				requestAnimationFrame(animate);
+			}
+
+			animate();
+		</script>
 		<script type="module" src="/src/scripts/main.ts"></script>
 	</body>
 </html>
