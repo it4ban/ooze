@@ -38,7 +38,6 @@ class Ooze {
 		this.wavePoints = [];
 
 		this.resizeCanvas();
-
 		this.createWaves();
 		this.animate();
 	}
@@ -63,8 +62,6 @@ class Ooze {
 			}
 			this.wavePoints.push(points);
 		}
-
-		console.log(this.wavePoints);
 
 		if (this.offsetsWave.length > 0) {
 			for (let i = 0; i <= this.offsetsWave.length - 1; i++) {
